@@ -13,7 +13,7 @@ const StatCard = ({ label, value, change, icon: IconComponent }) => {
           background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)',
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          <Icon size={24} variant="Bulk" />
+          <Icon size={28} color="currentColor" variant="Bulk" />
         </div>
         {change && (
           <span className={`badge ${isPositive ? 'badge-success' : 'badge-danger'}`}>

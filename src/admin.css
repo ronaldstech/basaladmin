@@ -131,6 +131,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 90;
+  background: rgba(9, 9, 11, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 /* Mobile Menu Button */
