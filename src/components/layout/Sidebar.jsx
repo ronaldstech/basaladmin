@@ -8,10 +8,11 @@ import {
   MusicPlaylist, 
   Card, 
   Microphone2,
-  Box
+  Box,
+  SearchNormal1,
 } from 'iconsax-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const navItems = [
     { name: 'Dashboard', path: '/', icon: Element3 },
     { name: 'Users', path: '/users', icon: Profile2User },
@@ -20,10 +21,11 @@ const Sidebar = () => {
     { name: 'Playlists', path: '/playlists', icon: MusicPlaylist },
     { name: 'Artists', path: '/artists', icon: Microphone2 },
     { name: 'Transactions', path: '/transactions', icon: Card },
+    { name: 'Search Queries', path: '/search-queries', icon: SearchNormal1 },
   ];
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-logo">
         <Box size={32} variant="Bulk" />
         <span>BasalAdmin</span>
@@ -34,6 +36,7 @@ const Sidebar = () => {
             key={item.name}
             to={item.path}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={() => setIsOpen(false)}
           >
             <item.icon size={20} color="currentColor" />
             <span>{item.name}</span>
