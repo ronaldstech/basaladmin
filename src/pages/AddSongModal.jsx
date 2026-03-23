@@ -132,7 +132,9 @@ const AddSongModal = ({ isOpen, onClose }) => {
               imageUrl: imageUrl, // Use the first song's cover as album cover
               songs: [],
               createdAt: Date.now(),
-              createdBy: auth.currentUser?.displayName || 'Admin'
+              uploadedBy: 'basal',
+              createdBy: 'basal',
+              uploaderID: auth.currentUser?.uid || 'unknown'
             });
             albumId = albumDoc.id;
           }
@@ -144,7 +146,9 @@ const AddSongModal = ({ isOpen, onClose }) => {
             album: albumId, // Store the album UID
             songUrl,
             imageUrl,
-            createdBy: auth.currentUser?.displayName || 'Admin',
+            uploadedBy: 'basal',
+            createdBy: 'basal',
+            uploaderID: auth.currentUser?.uid || 'unknown',
             creatorUid: auth.currentUser?.uid || 'unknown',
             createdAt: Date.now()
           });
@@ -179,67 +183,45 @@ const AddSongModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(16px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 2000, padding: '2rem'
-    }}>
-      <div style={{
-        width: '100%', maxWidth: '900px', maxHeight: '90vh',
-        background: 'var(--bg-card)', border: '1px solid var(--glass-border)',
-        backdropFilter: 'blur(24px)',
-        borderRadius: '1.5rem', display: 'flex', flexDirection: 'column',
-        overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-        animation: 'fadeIn 0.3s ease-out forwards'
-      }}>
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ maxWidth: '900px' }}>
         {/* Header */}
-        <div style={{ 
-          padding: '1.5rem 2rem', borderBottom: '1px solid var(--glass-border)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-        }}>
+        <div className="modal-header">
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>Add New Songs</h2>
-            <p style={{ color: '#9ca3af', fontSize: '0.875rem', marginTop: '0.25rem' }}>Select audio files to automatically extract metadata</p>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Add New Songs</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>Select audio files to automatically extract metadata</p>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
             <CloseCircle size={28} />
           </button>
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 2rem' }}>
+        <div className="modal-body">
           {selectedSongs.length === 0 ? (
             <div 
               onClick={() => fileInputRef.current?.click()}
-              style={{
-                height: '300px', border: '2px dashed var(--glass-border)',
-                background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: '1rem', display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                gap: '1rem', transition: 'border-color 0.2s',
-                hover: { borderColor: '#6366f1' }
-              }}
+              className="upload-dropzone"
             >
-              <div style={{ padding: '1rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '1rem', color: '#6366f1' }}>
-                <Import size={40} />
+              <div className="upload-icon-wrapper">
+                <Import size={32} />
               </div>
               <div style={{ textAlign: 'center' }}>
                 <p style={{ fontWeight: 600, fontSize: '1.125rem' }}>Click to Browse Files</p>
-                <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>Supports .mp3, .m4a, .wav</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Supports .mp3, .m4a, .wav</p>
               </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {selectedSongs.map(song => (
-                <div key={song.id} style={{
+                <div key={song.id} className="add-song-item" style={{
                   background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)',
                   borderRadius: '1rem', padding: '1.25rem', display: 'flex', gap: '1.5rem',
                   alignItems: 'start', position: 'relative',
                   opacity: song.status === 'done' ? 0.6 : 1
                 }}>
                   {/* Song Detail Form */}
-                  <div style={{ width: '100px', height: '100px', borderRadius: '0.75rem', overflow: 'hidden', flexShrink: 0, background: '#222' }}>
+                  <div className="add-song-cover" style={{ width: '100px', height: '100px', borderRadius: '0.75rem', overflow: 'hidden', flexShrink: 0, background: '#222' }}>
                     {song.coverUrl ? (
                       <img src={song.coverUrl} alt="cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
@@ -249,29 +231,32 @@ const AddSongModal = ({ isOpen, onClose }) => {
                     )}
                   </div>
 
-                  <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>TITLE</label>
+                  <div className="song-form-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label className="modal-label">Title</label>
                       <input 
-                        type="text" value={song.title} 
+                        type="text" 
+                        className="modal-input"
+                        value={song.title} 
                         onChange={(e) => updateSongInfo(song.id, 'title', e.target.value)}
-                        style={{ padding: '0.6rem 0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', outline: 'none', borderRadius: '0.5rem', color: '#fff' }}
                       />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                      <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ARTIST</label>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label className="modal-label">Artist</label>
                       <input 
-                        type="text" value={song.artist} 
+                        type="text" 
+                        className="modal-input"
+                        value={song.artist} 
                         onChange={(e) => updateSongInfo(song.id, 'artist', e.target.value)}
-                        style={{ padding: '0.6rem 0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', outline: 'none', borderRadius: '0.5rem', color: '#fff' }}
                       />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', gridColumn: 'span 2' }}>
-                      <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ALBUM NAME</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gridColumn: '1 / -1' }}>
+                      <label className="modal-label">Album Name</label>
                       <input 
-                        type="text" value={song.album} 
+                        type="text" 
+                        className="modal-input"
+                        value={song.album} 
                         onChange={(e) => updateSongInfo(song.id, 'album', e.target.value)}
-                        style={{ padding: '0.6rem 0.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', outline: 'none', borderRadius: '0.5rem', color: '#fff' }}
                       />
                     </div>
                   </div>
@@ -298,19 +283,17 @@ const AddSongModal = ({ isOpen, onClose }) => {
               
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                style={{
-                  padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--glass-border)',
-                  borderRadius: '1rem', color: '#9ca3af', cursor: 'pointer', fontWeight: 600
-                }}
+                className="add-more-btn"
               >
-                + Add More Files
+                <Import size={20} />
+                Add More Files
               </button>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '1.5rem 2rem', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+        <div className="modal-footer">
           <button 
             onClick={onClose} 
             disabled={isUploading}
@@ -342,7 +325,6 @@ const AddSongModal = ({ isOpen, onClose }) => {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
       `}</style>
     </div>
   );

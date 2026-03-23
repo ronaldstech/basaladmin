@@ -25,7 +25,7 @@ const UsersPage = () => {
           const d = doc.data();
           const rawCreatedAt = typeof d.createdAt === 'number' ? d.createdAt : (d.createdAt?.toMillis?.() ?? 0);
           const createdAt = rawCreatedAt
-            ? new Date(rawCreatedAt).toLocaleDateString()
+            ? new Date(rawCreatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             : '—';
           return {
             id: doc.id,

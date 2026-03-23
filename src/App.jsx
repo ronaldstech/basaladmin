@@ -12,6 +12,7 @@ import PlaylistsPage from './pages/Playlists';
 import TransactionsPage from './pages/Transactions';
 import ArtistsPage from './pages/Artists';
 import SearchQueriesPage from './pages/SearchQueries';
+import PremiumMembersPage from './pages/PremiumMembers';
 import LoginPage from './pages/LoginPage';
 import './admin.css';
 
@@ -59,7 +60,7 @@ function App() {
     <Router>
       <div className="admin-layout">
         {isSidebarOpen && (
-          <div 
+          <div
             onClick={() => setIsSidebarOpen(false)}
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -71,19 +72,18 @@ function App() {
         <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
         <main className="main-content">
           <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-          <div style={{ padding: '0 2.5rem 2.5rem' }}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/users" element={<UsersPage />} />
-              <Route path="/songs" element={<SongsPage />} />
-              <Route path="/albums" element={<AlbumsPage />} />
-              <Route path="/playlists" element={<PlaylistsPage />} />
-              <Route path="/transactions" element={<TransactionsPage />} />
-              <Route path="/artists" element={<ArtistsPage />} />
-              <Route path="/search-queries" element={<SearchQueriesPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/songs" element={<SongsPage />} />
+            <Route path="/albums" element={<AlbumsPage />} />
+            <Route path="/playlists" element={<PlaylistsPage />} />
+            <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/artists" element={<ArtistsPage />} />
+            <Route path="/search-queries" element={<SearchQueriesPage />} />
+            <Route path="/premium-members" element={<PremiumMembersPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </main>
       </div>
     </Router>

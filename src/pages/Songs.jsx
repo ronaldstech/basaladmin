@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { CloseCircle, SearchNormal1 } from 'iconsax-react';
 import DataTable from '../components/common/DataTable';
 import AddSongModal from './AddSongModal';
 
 const SongsPage = () => {
   const [songs, setSongs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -115,6 +117,11 @@ const SongsPage = () => {
     { key: 'createdBy', label: 'Uploader' },
   ];
 
+  const filteredSongs = songs.filter(song => 
+    song.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    song.artist?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) return (
     <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
       <p style={{ color: 'var(--text-secondary)' }}>Loading songs…</p>
@@ -126,12 +133,53 @@ const SongsPage = () => {
   );
 
   return (
-    <div className="page-container">
-      <h1 style={{ fontSize: '1.875rem', textAlign: 'left', margin: '0 0 1.5rem' }}>Song Management</h1>
+    <div className="page-container fade-in">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>Song Management</h1>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>Manage and organize your music library from one place.</p>
+        </div>
+
+        {/* Search Bar */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '350px' }}>
+          <SearchNormal1 
+            size={18} 
+            color="var(--text-muted)" 
+            style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} 
+          />
+          <input 
+            type="text"
+            placeholder="Search songs, artists..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.8rem 1rem 0.8rem 2.8rem',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: '0.75rem',
+              color: 'var(--text-primary)',
+              fontSize: '0.9rem',
+              outline: 'none',
+              transition: 'var(--transition)'
+            }}
+            className="search-input"
+          />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery('')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
+            >
+              <CloseCircle size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+
       <DataTable
-        title={`All Songs (${songs.length})`}
+        title={searchQuery ? `Search Results (${filteredSongs.length})` : `All Songs (${songs.length})`}
         columns={columns}
-        data={songs}
+        data={filteredSongs}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onAdd={() => setIsAddModalOpen(true)}
@@ -144,77 +192,64 @@ const SongsPage = () => {
 
       {/* Modern Edit Modal */}
       {isEditModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.7)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div className="card-table" style={{
-            width: '100%',
-            maxWidth: '450px',
-            padding: '2rem',
-            background: 'var(--card-bg)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '1.25rem',
-            animation: 'fadeIn 0.3s ease-out'
-          }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1.5rem' }}>Edit Song</h2>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#9ca3af' }}>TITLE</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', color: '#fff' }}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#9ca3af' }}>ARTIST</label>
-                <input
-                  type="text"
-                  value={formData.artist}
-                  onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                  style={{ padding: '0.75rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', color: '#fff' }}
-                />
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '450px' }}>
+            <div className="modal-header">
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Edit Song</h2>
+              <button onClick={() => setIsEditModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <CloseCircle size={24} />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="song-form-grid">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label className="modal-label">Title</label>
+                  <input
+                    type="text"
+                    className="modal-input"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Song Title"
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label className="modal-label">Artist</label>
+                  <input
+                    type="text"
+                    className="modal-input"
+                    value={formData.artist}
+                    onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                    placeholder="Artist Name"
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gridColumn: '1 / -1' }}>
+                  <label className="modal-label">Album</label>
+                  <input
+                    type="text"
+                    className="modal-input"
+                    value={formData.album}
+                    onChange={(e) => setFormData({ ...formData, album: e.target.value })}
+                    placeholder="Album Name"
+                  />
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <div className="modal-footer">
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                style={{
-                  flex: 1,
-                  padding: '0.75rem',
-                  borderRadius: '0.75rem',
-                  border: '1px solid var(--border-color)',
-                  background: 'transparent',
-                  color: 'var(--text-primary)',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className="btn-secondary"
+                style={{ padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: 600, border: '1px solid var(--glass-border)', background: 'transparent', color: '#fff', cursor: 'pointer' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="nav-item active"
-                style={{
-                  flex: 1,
-                  padding: '0.75rem',
-                  borderRadius: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer'
+                style={{ 
+                  padding: '0.75rem 2rem', borderRadius: '0.75rem', border: 'none', 
+                  background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
+                  color: '#fff', cursor: 'pointer', fontWeight: 600
                 }}
               >
                 Save Changes

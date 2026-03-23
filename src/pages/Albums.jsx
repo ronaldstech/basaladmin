@@ -58,7 +58,7 @@ const AlbumsPage = () => {
     { 
       key: 'createdAt', 
       label: 'Date Added',
-      render: (val) => val ? new Date(val).toLocaleDateString() : 'N/A'
+      render: (val) => val ? new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'
     },
   ];
 

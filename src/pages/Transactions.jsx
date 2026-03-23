@@ -15,9 +15,13 @@ const TransactionsPage = () => {
         const data = snapshot.docs.map((doc) => {
           const d = doc.data();
           // timestamp can be a Firestore Timestamp or string
-          const ts = d.timestamp
-            ? (d.timestamp.toDate ? d.timestamp.toDate().toLocaleDateString() : new Date(d.timestamp).toLocaleDateString())
-            : (d.created_at ? new Date(d.created_at).toLocaleDateString() : '—');
+          const formatDate = (val) => {
+            if (!val) return '—';
+            const date = val.toDate ? val.toDate() : new Date(val);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          };
+
+          const ts = formatDate(d.timestamp || d.created_at);
 
           return {
             id: doc.id,
