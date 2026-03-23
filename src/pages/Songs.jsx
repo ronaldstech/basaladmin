@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { CloseCircle, SearchNormal1 } from 'iconsax-react';
 import DataTable from '../components/common/DataTable';
 import AddSongModal from './AddSongModal';
+import ModalPortal from '../components/common/ModalPortal';
 
 const SongsPage = () => {
   const [songs, setSongs] = useState([]);
@@ -192,71 +193,73 @@ const SongsPage = () => {
 
       {/* Modern Edit Modal */}
       {isEditModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '450px' }}>
-            <div className="modal-header">
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Edit Song</h2>
-              <button onClick={() => setIsEditModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                <CloseCircle size={24} />
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="song-form-grid">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <label className="modal-label">Title</label>
-                  <input
-                    type="text"
-                    className="modal-input"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Song Title"
-                  />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <label className="modal-label">Artist</label>
-                  <input
-                    type="text"
-                    className="modal-input"
-                    value={formData.artist}
-                    onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                    placeholder="Artist Name"
-                  />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gridColumn: '1 / -1' }}>
-                  <label className="modal-label">Album</label>
-                  <input
-                    type="text"
-                    className="modal-input"
-                    value={formData.album}
-                    onChange={(e) => setFormData({ ...formData, album: e.target.value })}
-                    placeholder="Album Name"
-                  />
+        <ModalPortal>
+          <div className="modal-overlay">
+            <div className="modal-content" style={{ maxWidth: '450px' }}>
+              <div className="modal-header">
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Edit Song</h2>
+                <button onClick={() => setIsEditModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                  <CloseCircle size={24} />
+                </button>
+              </div>
+              
+              <div className="modal-body">
+                <div className="song-form-grid">
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label className="modal-label">Title</label>
+                    <input
+                      type="text"
+                      className="modal-input"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="Song Title"
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label className="modal-label">Artist</label>
+                    <input
+                      type="text"
+                      className="modal-input"
+                      value={formData.artist}
+                      onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                      placeholder="Artist Name"
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gridColumn: '1 / -1' }}>
+                    <label className="modal-label">Album</label>
+                    <input
+                      type="text"
+                      className="modal-input"
+                      value={formData.album}
+                      onChange={(e) => setFormData({ ...formData, album: e.target.value })}
+                      placeholder="Album Name"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="modal-footer">
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="btn-secondary"
-                style={{ padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: 600, border: '1px solid var(--glass-border)', background: 'transparent', color: '#fff', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveEdit}
-                style={{ 
-                  padding: '0.75rem 2rem', borderRadius: '0.75rem', border: 'none', 
-                  background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
-                  color: '#fff', cursor: 'pointer', fontWeight: 600
-                }}
-              >
-                Save Changes
-              </button>
+              <div className="modal-footer">
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="btn-secondary"
+                  style={{ padding: '0.75rem 1.5rem', borderRadius: '0.75rem', fontWeight: 600, border: '1px solid var(--glass-border)', background: 'transparent', color: '#fff', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  style={{ 
+                    padding: '0.75rem 2rem', borderRadius: '0.75rem', border: 'none', 
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
+                    color: '#fff', cursor: 'pointer', fontWeight: 600
+                  }}
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

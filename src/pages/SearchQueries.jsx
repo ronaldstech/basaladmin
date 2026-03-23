@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc, addDoc, serverT
 import { db } from '../firebase';
 import DataTable from '../components/common/DataTable';
 import { SearchNormal1, TickCircle, CloseCircle, Send } from 'iconsax-react';
+import ModalPortal from '../components/common/ModalPortal';
 
 const SearchQueriesPage = () => {
   const [queries, setQueries] = useState([]);
@@ -196,66 +197,68 @@ const SearchQueriesPage = () => {
 
       {/* Notification Modal */}
       {isNotifyModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '450px' }}>
-            <div className="modal-header">
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Send Notification</h2>
-              <button onClick={() => setIsNotifyModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                <CloseCircle size={24} />
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div style={{ marginBottom: '1.25rem' }}>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                  Target User: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{userMap[selectedQuery?.uid] || 'Unknown User'}</span>
-                </p>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                  For Search: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>"{selectedQuery?.query}"</span>
-                </p>
+        <ModalPortal>
+          <div className="modal-overlay">
+            <div className="modal-content" style={{ maxWidth: '450px' }}>
+              <div className="modal-header">
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Send Notification</h2>
+                <button onClick={() => setIsNotifyModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                  <CloseCircle size={24} />
+                </button>
+              </div>
+              
+              <div className="modal-body">
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                    Target User: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{userMap[selectedQuery?.uid] || 'Unknown User'}</span>
+                  </p>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                    For Search: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>"{selectedQuery?.query}"</span>
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label className="modal-label">Notification Message</label>
+                  <textarea
+                    className="modal-input"
+                    rows="4"
+                    value={notificationBody}
+                    onChange={(e) => setNotificationBody(e.target.value)}
+                    style={{ resize: 'none' }}
+                  />
+                </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <label className="modal-label">Notification Message</label>
-                <textarea
-                  className="modal-input"
-                  rows="4"
-                  value={notificationBody}
-                  onChange={(e) => setNotificationBody(e.target.value)}
-                  style={{ resize: 'none' }}
-                />
+              <div className="modal-footer">
+                <button
+                  onClick={() => setIsNotifyModalOpen(false)}
+                  disabled={isSending}
+                  style={{ padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: '1px solid var(--glass-border)', background: 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 600, opacity: isSending ? 0.5 : 1 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendNotification}
+                  disabled={isSending || !notificationBody.trim()}
+                  style={{ 
+                    padding: '0.75rem 2rem', borderRadius: '0.75rem', border: 'none', 
+                    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
+                    color: '#fff', cursor: 'pointer', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', gap: '0.5rem',
+                    opacity: (isSending || !notificationBody.trim()) ? 0.5 : 1
+                  }}
+                >
+                  {isSending ? 'Sending...' : (
+                    <>
+                      <Send size={18} />
+                      Send Notification
+                    </>
+                  )}
+                </button>
               </div>
-            </div>
-
-            <div className="modal-footer">
-              <button
-                onClick={() => setIsNotifyModalOpen(false)}
-                disabled={isSending}
-                style={{ padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: '1px solid var(--glass-border)', background: 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 600, opacity: isSending ? 0.5 : 1 }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSendNotification}
-                disabled={isSending || !notificationBody.trim()}
-                style={{ 
-                  padding: '0.75rem 2rem', borderRadius: '0.75rem', border: 'none', 
-                  background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
-                  color: '#fff', cursor: 'pointer', fontWeight: 600,
-                  display: 'flex', alignItems: 'center', gap: '0.5rem',
-                  opacity: (isSending || !notificationBody.trim()) ? 0.5 : 1
-                }}
-              >
-                {isSending ? 'Sending...' : (
-                  <>
-                    <Send size={18} />
-                    Send Notification
-                  </>
-                )}
-              </button>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );
